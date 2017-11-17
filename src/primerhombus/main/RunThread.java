@@ -23,6 +23,8 @@ public class RunThread extends JPanel implements Runnable {
 	private int cursorX;
 	private int cursorY;
 	private int size;
+	private int offsetX;
+	private int offsetY;
 	
 	int moveTimer = 5;
 	
@@ -86,6 +88,22 @@ public class RunThread extends JPanel implements Runnable {
 				this.cursorX = this.size / 2 + 1;
 				this.cursorY = this.size / 2 + 1;
 			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_PAGE_UP)) {
+				this.offsetY += 5;
+			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_PAGE_DOWN)) {
+				this.offsetY -= 5;
+			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_HOME)) {
+				this.offsetX += 5;
+			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_END)) {
+				this.offsetX -= 5;
+			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_Z)) {
+				this.offsetX = 0;
+				this.offsetY = 0;
+			}
 			if(!this.keyListener.isKeyPressed(KeyEvent.VK_W) && !this.keyListener.isKeyPressed(KeyEvent.VK_S) && !this.keyListener.isKeyPressed(KeyEvent.VK_A) && !this.keyListener.isKeyPressed(KeyEvent.VK_D)) {
 				this.moveTimer = 0;
 			}
@@ -120,7 +138,7 @@ public class RunThread extends JPanel implements Runnable {
 		super.paint(g);
 		for(int i = 0; i < this.coordsToDisplay.size(); i++) {
 			g.setColor(this.coordsToDisplay.get(i)[0] == this.size / 2 + 1 || this.coordsToDisplay.get(i)[1] == this.size / 2 + 1 ? Color.BLUE : Color.BLACK);
-			g.drawRect(this.coordsToDisplay.get(i)[0], this.coordsToDisplay.get(i)[1], 0, 0);
+			g.drawRect(this.coordsToDisplay.get(i)[0] + this.offsetX, this.coordsToDisplay.get(i)[1] + this.offsetY, 0, 0);
 		}
 		g.setColor(Color.BLACK);
 		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size / 2 - 2 * this.size + 9)) * 100)) + "% complete..." : "done!"), 10, /*this.size - 11*/20);
@@ -129,7 +147,7 @@ public class RunThread extends JPanel implements Runnable {
 			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 50);
 			g.drawString("This is " + (PrimeRhombus.isPrime(this.grid[this.cursorX][this.cursorY]) ? "" : "not ") + "a prime number.", 10, 65);
 			g.setColor(Color.RED);
-			g.drawRect(this.cursorX - 1, this.cursorY - 1, 2, 2);
+			g.drawRect(this.cursorX - 1 + this.offsetX, this.cursorY - 1 + this.offsetY, 2, 2);
 		}
 		else {
 			g.setColor(Color.BLUE);
