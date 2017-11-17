@@ -8,23 +8,32 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import primerhombus.io.KeyboardListener;
+
 @SuppressWarnings("serial")
 public class RunThread extends JPanel implements Runnable {
 	
-	public long[][] grid = new long[1001][1001];
-	public int x = 501;
-	public int y = 501;
+	public long[][] grid;
+	public int x;
+	public int y;
 	private long value = 1;
 	private List<int[]> coordsToDisplay = new ArrayList<int[]>();
 	private boolean isGenerating = true;
-	private PrimeRhombus rhombus;
-	private int cursorX = 501;
-	private int cursorY = 501;
+	private KeyboardListener keyListener;
+	private int cursorX;
+	private int cursorY;
+	private int size;
 	
 	int moveTimer = 5;
 	
 	public RunThread(PrimeRhombus rhombus) {
-		this.rhombus = rhombus;
+		this.keyListener = rhombus.getKeyListener();
+		this.size = rhombus.size;
+		this.grid = new long[rhombus.size][rhombus.size];
+		this.x = rhombus.size / 2 + 1;
+		this.y = rhombus.size / 2 + 1;
+		this.cursorX = rhombus.size / 2 + 1;
+		this.cursorY = rhombus.size / 2 + 1;
 	}
 
 	@Override
@@ -39,59 +48,59 @@ public class RunThread extends JPanel implements Runnable {
 				this.isGenerating = false;
 				break;
 			}
-			if(x <= 501 && y == 501) {
+			if(x <= this.size / 2 + 1 && y == this.size / 2 + 1) {
 				this.y--;
 			}
-			else if(x >= 501 && y < 501) {
+			else if(x >= this.size / 2 + 1 && y < this.size / 2 + 1) {
 				this.x++;
 				this.y++;
 			}
-			else if(x > 501 && y >= 501) {
+			else if(x > this.size / 2 + 1 && y >= this.size / 2 + 1) {
 				this.x--;
 				this.y++;
 			}
-			else if(x <= 501 && y > 501) {
+			else if(x <= this.size / 2 + 1 && y > this.size / 2 + 1) {
 				this.x--;
 				this.y--;
 			}
-			else if(x < 501 && y <= 501) {
+			else if(x < this.size / 2 + 1 && y <= this.size / 2 + 1) {
 				this.x++;
 				this.y--;
 			}
 			this.repaint();
 		}
 		while(true) {
-			if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_UP) && this.cursorY > 1) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_UP) && this.cursorY > 1) {
 				this.cursorY--;
 			}
-			if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_DOWN) && this.cursorY < 1000) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_DOWN) && this.cursorY < this.size - 1) {
 				this.cursorY++;
 			}
-			if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_LEFT) && this.cursorX > 1) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_LEFT) && this.cursorX > 1) {
 				this.cursorX--;
 			}
-			if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_RIGHT) && this.cursorX < 1000) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_RIGHT) && this.cursorX < this.size - 1) {
 				this.cursorX++;
 			}
-			if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_O)) {
-				this.cursorX = 501;
-				this.cursorY = 501;
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_O)) {
+				this.cursorX = this.size / 2 + 1;
+				this.cursorY = this.size / 2 + 1;
 			}
-			if(!this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_W) && !this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_S) && !this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_A) && !this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_D)) {
+			if(!this.keyListener.isKeyPressed(KeyEvent.VK_W) && !this.keyListener.isKeyPressed(KeyEvent.VK_S) && !this.keyListener.isKeyPressed(KeyEvent.VK_A) && !this.keyListener.isKeyPressed(KeyEvent.VK_D)) {
 				this.moveTimer = 0;
 			}
 			else {
 				if(moveTimer-- <= 0) {
-					if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_W) && this.cursorY > 1) {
+					if(this.keyListener.isKeyPressed(KeyEvent.VK_W) && this.cursorY > 1) {
 						this.cursorY--;
 					}
-					if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_S) && this.cursorY < 1000) {
+					if(this.keyListener.isKeyPressed(KeyEvent.VK_S) && this.cursorY < this.size - 1) {
 						this.cursorY++;
 					}
-					if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_A) && this.cursorX > 1) {
+					if(this.keyListener.isKeyPressed(KeyEvent.VK_A) && this.cursorX > 1) {
 						this.cursorX--;
 					}
-					if(this.rhombus.getKeyListener().isKeyPressed(KeyEvent.VK_D) && this.cursorX < 1000) {
+					if(this.keyListener.isKeyPressed(KeyEvent.VK_D) && this.cursorX < this.size - 1) {
 						this.cursorX++;
 					}
 					this.moveTimer = 5;
@@ -109,15 +118,16 @@ public class RunThread extends JPanel implements Runnable {
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		g.setColor(Color.BLACK);
 		for(int i = 0; i < this.coordsToDisplay.size(); i++) {
+			g.setColor(this.coordsToDisplay.get(i)[0] == this.size / 2 + 1 || this.coordsToDisplay.get(i)[1] == this.size / 2 + 1 ? Color.BLUE : Color.BLACK);
 			g.drawRect(this.coordsToDisplay.get(i)[0], this.coordsToDisplay.get(i)[1], 0, 0);
 		}
-		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / 500001.0D) * 100)) + "% complete..." : "done!"), 10, 990);
+		g.setColor(Color.BLACK);
+		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size / 2 - 2 * this.size + 9)) * 100)) + "% complete..." : "done!"), 10, /*this.size - 11*/20);
 		if(!this.isGenerating) {
-			g.drawString("Coordinates: (" + this.cursorX + ", " + this.cursorY + ")", 10, 20);
-			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 35);
-			g.drawString("This is " + (PrimeRhombus.isPrime(this.grid[this.cursorX][this.cursorY]) ? "" : "not ") + "a prime number.", 10, 50);
+			g.drawString("Coordinates: (" + (this.cursorX <= this.size / 2 + 1 ? this.size / 2 - this.cursorX + 2 : this.cursorX - this.size / 2) + ", " + (this.cursorY <= this.size / 2 + 1 ? this.size / 2 - this.cursorY + 2 : this.cursorY - this.size / 2) + ")", 10, 35);
+			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 50);
+			g.drawString("This is " + (PrimeRhombus.isPrime(this.grid[this.cursorX][this.cursorY]) ? "" : "not ") + "a prime number.", 10, 65);
 			g.setColor(Color.RED);
 			g.drawRect(this.cursorX - 1, this.cursorY - 1, 2, 2);
 		}
