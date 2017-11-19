@@ -84,20 +84,26 @@ public class RunThread extends JPanel implements Runnable {
 			if(this.keyListener.isKeyPressed(KeyEvent.VK_RIGHT) && this.cursorX < this.size - 1) {
 				this.cursorX++;
 			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_X)) {
+				this.cursorX = this.size / 2 + 1;
+			}
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_Y)) {
+				this.cursorY = this.size / 2 + 1;
+			}
 			if(this.keyListener.isKeyPressed(KeyEvent.VK_O)) {
 				this.cursorX = this.size / 2 + 1;
 				this.cursorY = this.size / 2 + 1;
 			}
-			if(this.keyListener.isKeyPressed(KeyEvent.VK_PAGE_UP)) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_U)) {
 				this.offsetY += 5;
 			}
-			if(this.keyListener.isKeyPressed(KeyEvent.VK_PAGE_DOWN)) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_J)) {
 				this.offsetY -= 5;
 			}
-			if(this.keyListener.isKeyPressed(KeyEvent.VK_HOME)) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_H)) {
 				this.offsetX += 5;
 			}
-			if(this.keyListener.isKeyPressed(KeyEvent.VK_END)) {
+			if(this.keyListener.isKeyPressed(KeyEvent.VK_K)) {
 				this.offsetX -= 5;
 			}
 			if(this.keyListener.isKeyPressed(KeyEvent.VK_Z)) {
@@ -141,7 +147,7 @@ public class RunThread extends JPanel implements Runnable {
 			g.drawRect(this.coordsToDisplay.get(i)[0] + this.offsetX, this.coordsToDisplay.get(i)[1] + this.offsetY, 0, 0);
 		}
 		g.setColor(Color.BLACK);
-		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size / 2 - 2 * this.size + 9)) * 100)) + "% complete..." : "done!"), 10, /*this.size - 11*/20);
+		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size * 0.5 + 1)) * 100)) + "% complete..." : "done!"), 10, 20);
 		if(!this.isGenerating) {
 			g.drawString("Coordinates: (" + (this.cursorX <= this.size / 2 + 1 ? this.size / 2 - this.cursorX + 2 : this.cursorX - this.size / 2) + ", " + (this.cursorY <= this.size / 2 + 1 ? this.size / 2 - this.cursorY + 2 : this.cursorY - this.size / 2) + ")", 10, 35);
 			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 50);
