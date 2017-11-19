@@ -139,6 +139,14 @@ public class RunThread extends JPanel implements Runnable {
 		}
 	}
 	
+	public int getActualXCoord(int x) {
+		return x <= this.size / 2 + 1 ? this.size / 2 - x + 2 : x - this.size / 2;
+	}
+	
+	public int getActualYCoord(int y) {
+		return y <= this.size / 2 + 1 ? this.size / 2 - y + 2 : y - this.size / 2;
+	}
+	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -149,9 +157,21 @@ public class RunThread extends JPanel implements Runnable {
 		g.setColor(Color.BLACK);
 		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size * 0.5 + 1)) * 100)) + "% complete..." : "done!"), 10, 20);
 		if(!this.isGenerating) {
-			g.drawString("Coordinates: (" + (this.cursorX <= this.size / 2 + 1 ? this.size / 2 - this.cursorX + 2 : this.cursorX - this.size / 2) + ", " + (this.cursorY <= this.size / 2 + 1 ? this.size / 2 - this.cursorY + 2 : this.cursorY - this.size / 2) + ")", 10, 35);
+			g.drawString("Coordinates: (" + this.getActualXCoord(this.cursorX) + ", " + this.getActualYCoord(this.cursorY) + ")", 10, 35);
 			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 50);
 			g.drawString("This is " + (PrimeRhombus.isPrime(this.grid[this.cursorX][this.cursorY]) ? "" : "not ") + "a prime number.", 10, 65);
+			if(this.cursorX > this.size / 2 + 1 && this.cursorY <= this.size / 2 + 1) {
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 8) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 9 * this.getActualYCoord(this.cursorY) + 10), 10, 80);
+			}
+			else if(this.cursorX < this.size / 2 + 1 && this.cursorY < this.size / 2 + 1) {
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 10) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 9 * this.getActualYCoord(this.cursorY) + 12), 10, 80);
+			}
+			else if(this.cursorX < this.size / 2 + 1 && this.cursorY >= this.size / 2 + 1) {
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 6) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 7 * this.getActualYCoord(this.cursorY) + 6), 10, 80);
+			}
+			else if(this.cursorX > this.size / 2 + 1 && this.cursorY > this.size / 2 + 1) {
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 8) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 7 * this.getActualYCoord(this.cursorY) + 8), 10, 80);
+			}
 			g.setColor(Color.RED);
 			g.drawRect(this.cursorX - 1 + this.offsetX, this.cursorY - 1 + this.offsetY, 2, 2);
 		}
