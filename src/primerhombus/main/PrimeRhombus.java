@@ -37,7 +37,7 @@ public class PrimeRhombus {
 		if(n <= 1) {
 			return false;
 		}
-		for(long i = 2; i < n / 2; i++) {
+		for(long i = 2; i <= Math.sqrt(n); i++) {
 			if(n % i == 0) {
 				return false;
 			}
