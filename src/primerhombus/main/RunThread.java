@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import primerhombus.io.KeyboardListener;
@@ -25,6 +26,7 @@ public class RunThread extends JPanel implements Runnable {
 	private int size;
 	private int offsetX;
 	private int offsetY;
+	private JFrame window;
 	
 	int moveTimer = 5;
 	
@@ -36,6 +38,9 @@ public class RunThread extends JPanel implements Runnable {
 		this.y = rhombus.size / 2 + 1;
 		this.cursorX = rhombus.size / 2 + 1;
 		this.cursorY = rhombus.size / 2 + 1;
+		this.window = rhombus.window;
+		this.offsetX = rhombus.window.getWidth() / 2 - rhombus.size / 2;
+		this.offsetY = rhombus.window.getHeight() / 2 - rhombus.size / 2;
 	}
 
 	@Override
@@ -107,8 +112,8 @@ public class RunThread extends JPanel implements Runnable {
 				this.offsetX -= 5;
 			}
 			if(this.keyListener.isKeyPressed(KeyEvent.VK_Z)) {
-				this.offsetX = 0;
-				this.offsetY = 0;
+				this.offsetX = this.window.getWidth() / 2 - this.size / 2;
+				this.offsetY = this.window.getHeight() / 2 - this.size / 2;
 			}
 			if(!this.keyListener.isKeyPressed(KeyEvent.VK_W) && !this.keyListener.isKeyPressed(KeyEvent.VK_S) && !this.keyListener.isKeyPressed(KeyEvent.VK_A) && !this.keyListener.isKeyPressed(KeyEvent.VK_D)) {
 				this.moveTimer = 0;
@@ -151,26 +156,28 @@ public class RunThread extends JPanel implements Runnable {
 	public void paint(Graphics g) {
 		super.paint(g);
 		for(int i = 0; i < this.coordsToDisplay.size(); i++) {
-			g.setColor(this.coordsToDisplay.get(i)[0] == this.size / 2 + 1 || this.coordsToDisplay.get(i)[1] == this.size / 2 + 1 ? Color.BLUE : Color.BLACK);
-			g.drawRect(this.coordsToDisplay.get(i)[0] + this.offsetX, this.coordsToDisplay.get(i)[1] + this.offsetY, 0, 0);
+			if(this.coordsToDisplay.get(i)[0] + this.offsetX >= 0 && this.coordsToDisplay.get(i)[0] + this.offsetX < this.window.getWidth() && this.coordsToDisplay.get(i)[1] + this.offsetY >= 0 && this.coordsToDisplay.get(i)[1] + this.offsetY < this.window.getHeight()) {
+				g.setColor(this.coordsToDisplay.get(i)[0] == this.size / 2 + 1 || this.coordsToDisplay.get(i)[1] == this.size / 2 + 1 ? Color.BLUE : Color.BLACK);
+				g.drawRect(this.coordsToDisplay.get(i)[0] + this.offsetX, this.coordsToDisplay.get(i)[1] + this.offsetY, 0, 0);
+			}
 		}
 		g.setColor(Color.BLACK);
-		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size * 0.5 + 1)) * 100)) + "% complete..." : "done!"), 10, 20);
+		g.drawString("Status: " + (isGenerating ? "generating - " + ((int)(((double)this.value / (this.size * this.size * 0.5 + 1)) * 100)) + "% complete..." : "done!"), 10, this.window.getHeight() - 40);
 		if(!this.isGenerating) {
-			g.drawString("Coordinates: (" + this.getActualXCoord(this.cursorX) + ", " + this.getActualYCoord(this.cursorY) + ")", 10, 35);
-			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 50);
-			g.drawString("This is " + (PrimeRhombus.isPrime(this.grid[this.cursorX][this.cursorY]) ? "" : "not ") + "a prime number.", 10, 65);
+			g.drawString("Coordinates: (" + this.getActualXCoord(this.cursorX) + ", " + this.getActualYCoord(this.cursorY) + ")", 10, 20);
+			g.drawString("Value: " + this.grid[this.cursorX][this.cursorY], 10, 35);
+			g.drawString("This is " + (PrimeRhombus.isPrime(this.grid[this.cursorX][this.cursorY]) ? "" : "not ") + "a prime number.", 10, 50);
 			if(this.cursorX > this.size / 2 + 1 && this.cursorY <= this.size / 2 + 1) {
-				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 8) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 9 * this.getActualYCoord(this.cursorY) + 10), 10, 80);
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 8) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 9 * this.getActualYCoord(this.cursorY) + 10), 10, 65);
 			}
 			else if(this.cursorX < this.size / 2 + 1 && this.cursorY < this.size / 2 + 1) {
-				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 10) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 9 * this.getActualYCoord(this.cursorY) + 12), 10, 80);
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 10) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 9 * this.getActualYCoord(this.cursorY) + 12), 10, 65);
 			}
 			else if(this.cursorX < this.size / 2 + 1 && this.cursorY >= this.size / 2 + 1) {
-				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 6) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 7 * this.getActualYCoord(this.cursorY) + 6), 10, 80);
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 6) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 7 * this.getActualYCoord(this.cursorY) + 6), 10, 65);
 			}
 			else if(this.cursorX > this.size / 2 + 1 && this.cursorY > this.size / 2 + 1) {
-				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 8) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 7 * this.getActualYCoord(this.cursorY) + 8), 10, 80);
+				g.drawString("Equation: 2x\u00B2+" + (4 * this.getActualYCoord(this.cursorY) - 8) + "x+" + (2 * this.getActualYCoord(this.cursorY) * this.getActualYCoord(this.cursorY) - 7 * this.getActualYCoord(this.cursorY) + 8), 10, 65);
 			}
 			g.setColor(Color.RED);
 			g.drawRect(this.cursorX - 1 + this.offsetX, this.cursorY - 1 + this.offsetY, 2, 2);

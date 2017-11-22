@@ -1,5 +1,7 @@
 package primerhombus.main;
 
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 
 import primerhombus.io.KeyboardListener;
@@ -12,7 +14,7 @@ public class PrimeRhombus {
 	public final int size;
 	
 	public PrimeRhombus(int size, String title) {
-		this.window.setSize(size + 8, size + 30);
+		this.window.setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setFocusable(true);
 		this.window.setLocationRelativeTo(null);
@@ -37,7 +39,13 @@ public class PrimeRhombus {
 		if(n <= 1) {
 			return false;
 		}
-		for(long i = 2; i <= Math.sqrt(n); i++) {
+		if(n == 2) {
+			return true;
+		}
+		else if(n % 2 == 0) {
+			return false;
+		}
+		for(long i = 3; i <= Math.sqrt(n); i += 2) {
 			if(n % i == 0) {
 				return false;
 			}
